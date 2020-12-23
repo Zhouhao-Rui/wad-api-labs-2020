@@ -21,14 +21,19 @@ router.post('/', async (req, res, next) => {
     });
   }
   if (req.query.action === 'register') {
-    await User.create(req.body).catch(next);
-    res.status(201).json({
-      code: 201,
-      msg: 'Successful created new user',
-    });
+    const pattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{5,}$/;
+    if (!pattern.test(req.body.password)) {
+      res.status(401).send('The password is too weak. It should contain at 5 chars and at least 1 number and 1 char');
+    } else {
+      await User.create(req.body).catch(next);
+      res.status(201).json({
+        code: 201,
+        msg: 'Successful created new user',
+      });
+    }
   } else {
     const user = await User.findByUserName(req.body.username).catch(next);
-    if (!user) return res.status(401).json({code: 401, msg: 'Authentication failed. User not found.'});
+    if (!user) return res.status(401).json({ code: 401, msg: 'Authentication failed. User not found.' });
     user.comparePassword(req.body.password, (err, isMatch) => {
       if (isMatch && !err) {
         // if user is found and password is right create a token
@@ -68,13 +73,23 @@ router.get('/:userName/favourites', (req, res, next) => {
   ).catch(next);
 });
 
-router.post('/:userName/favourites', async (req, res) => {
+router.post('/:userName/favourites', async (req, res, next) => {
   const newFavourite = req.body.id;
   const userName = req.params.userName;
-  const movie = await movieModel.findByMovieDBId(newFavourite);
-  const user = await User.findByUserName(userName);
-  await user.favourites.push(movie._id);
-  await user.save();
-  res.status(201).json(user);
+  try {
+    const movie = await movieModel.findByMovieDBId(newFavourite)
+    const user = await User.findByUserName(userName)
+    // judge whether the movie has been collected
+    if (user.favourites.includes(movie._id)) {
+      res.status(401).json({ code: 401, msg: 'this movie has been added to favourite' });
+    } else {
+      await user.favourites.push(movie._id);
+      await user.save();
+      res.status(201).json(user);
+    }
+  } catch(err) {
+    next(err);
+  }
+  
 });
 export default router;
