@@ -1,31 +1,37 @@
-import React, { useContext } from "react";
-import { Redirect } from "react-router-dom";
-import {AuthContext} from './authContext';
-import {Link } from "react-router-dom";
+import React, { useContext, useState } from 'react'
+import { Redirect, Link } from 'react-router-dom'
+import { AuthContext } from './authContext'
 
 const LoginPage = props => {
   const context = useContext(AuthContext)
+  const [userName, setUserName] = useState("")
+  const [password, setPassword] = useState("")
 
   const login = () => {
-    context.authenticate("user1", "pass1");
-  };
-  
-  // Set 'from' to path where browser is redirected after a successful login.
-  // Either / or the protected path user tried to access.
-  const { from } = props.location.state || { from: { pathname: "/" } };
+    context.authenticate(userName, password)
+  }
+
+  const { from } = props.location.state || { from: { pathname: "/" } }
 
   if (context.isAuthenticated === true) {
-    return <Redirect to={from} />;
+    return <Redirect to={from} />
   }
   return (
     <>
-      <h2>Login page</h2>
-      <p>You must log in to view the protected pages </p>
-      {/* Login web form  */}
+      <h2>Login Page</h2>
+      <p>You must log in to view the protected pages</p>
+      <input id="username" type="text" placeholder="user name" onChange={e => {
+        setUserName(e.target.value)
+      }} /><br />
+      <input id="password" type="password" placeholder="password" onChange={e => {
+        setPassword(e.target.value)
+      }} />
       <button onClick={login}>Log in</button>
-      <Link to="/signup">Sign Up!</Link>
+      <p>Not Registered?
+        <Link to="signup">Sign up!</Link>
+      </p>
     </>
-  );
-};
+  )
+}
 
 export default LoginPage;

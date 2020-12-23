@@ -8,14 +8,14 @@ const BaseAuthHeader = (props) => {
 
   return context.isAuthenticated ? (
     <p>
-      Welcome! <button onClick={() => context.signout()}>Sign out</button>
+      Welcome {context.userName}! <button onClick={() => context.signout()}>Sign out</button>
     </p>
   ) : (
-    <p>
-      You are not logged in{" "}
-      <button onClick={() => history.push("/login")}>Login</button>
-    </p>
-  );
+      <p>
+        You are not logged in{" "}
+        <button onClick={() => history.push("/login")}>Login</button>
+      </p>
+    );
 };
 
 export default withRouter(BaseAuthHeader);
