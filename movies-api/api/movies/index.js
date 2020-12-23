@@ -1,21 +1,18 @@
 import express from 'express';
 import {
-	getMovies, getMovie, getMovieReviews
+	getMovieReviews
 } from '../tmdb-api';
+import movieModel from './movieModel';
 
 const router = express.Router(); // eslint-disable-line
 
 router.get('/', (req, res, next) => {
-	getMovies()
-	.then(movies => res.status(200).send(movies))
-	.catch(err => next(err));
+	movieModel.find().then(movies => res.status(200).send(movies)).catch(next);
 });
 
 router.get('/:id', (req, res, next) => {
 	const id = parseInt(req.params.id);
-	getMovie(id)
-	.then(movie => res.status(200).send(movie))
-	.catch(err => next(err));
+	movieModel.findByMovieDBId(id).then(movie => res.status(200).send(movie)).catch(next);
 });
 
 router.get('/:id/reviews', (req, res, next) => {
