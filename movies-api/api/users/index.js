@@ -1,6 +1,6 @@
 import express from 'express';
 import User from './userModel';
-import jwt from 'jsonwebtoken'
+import jwt from 'jsonwebtoken';
 
 const router = express.Router(); // eslint-disable-line
 
@@ -17,17 +17,17 @@ router.post('/', async (req, res, next) => {
     res.status(401).json({
       success: false,
       msg: 'Please pass username and password',
-    })
+    });
   }
   if (req.query.action === 'register') {
     await User.create(req.body).catch(next);
     res.status(201).json({
       code: 201,
       msg: 'Successful created new user',
-    })
+    });
   } else {
     const user = await User.findByUserName(req.body.username).catch(next);
-    if (!user) return res.status(401).json({code: 401, msg: 'Authentication failed. User not found.'})
+    if (!user) return res.status(401).json({code: 401, msg: 'Authentication failed. User not found.'});
     user.comparePassword(req.body.password, (err, isMatch) => {
       if (isMatch && !err) {
         // if user is found and password is right create a token
@@ -35,14 +35,14 @@ router.post('/', async (req, res, next) => {
         res.status(200).json({
           success: true,
           token: 'BEARER ' + token
-        })
+        });
       } else {
         res.status(401).json({
           code: 401,
           msg: 'Authentication failed. Wrong password.'
-        })
+        });
       }
-    })
+    });
   }
 });
 

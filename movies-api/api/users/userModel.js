@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import bcrtpy from 'bcrypt-nodejs'
+import bcrtpy from 'bcrypt-nodejs';
 
 const Schema = mongoose.Schema;
 
@@ -27,12 +27,12 @@ UserSchema.pre('save', function (next) {
         }
         user.password = hash;
         next();
-      })
-    })
+      });
+    });
   } else {
     return next();
   }
-})
+});
 
 UserSchema.statics.findByUserName = function (username) {
   return this.findOne({ username: username });
@@ -44,7 +44,7 @@ UserSchema.methods.comparePassword = function (passw, cb) {
       return cb(err);
     }
     cb(null, isMatch);
-  })
+  });
 };
 
 export default mongoose.model('User', UserSchema);

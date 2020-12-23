@@ -6,7 +6,7 @@ import './db';
 import { loadUsers } from './seedData';
 import usersRouter from './api/users';
 import GenresRouter from './api/genres';
-import passport from './authenticate'
+import passport from './authenticate';
 
 dotenv.config();
 
